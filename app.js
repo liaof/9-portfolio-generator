@@ -1,26 +1,26 @@
 const inquirer = require('inquirer');
-//required to use the fs module
-//const fs = require('fs');
-//imports the code from a different module for use in this script, assigns it to the generatePage variable
-//const generatePage = require('./src/page-template');
+//   use object destructuring to create variables out of certain properties without dot notation
+const { writeFile, copyFile } = require('./utils/generate-site.js');
+//   assigns the anonymous HTML template function in page-template.js to the variable generatePage
+const generatePage = require('./src/page-template');
 
 
 
-//is the same as
-//const name = profileDataArgs[0];
-//const github = profileDataArgs[1];
+//   is the same as
+//   const name = profileDataArgs[0];
+//   const github = profileDataArgs[1];
 
-//const pageHTML = generatePage(name,github);
+//   const pageHTML = generatePage(name,github);
 
 
 
-//first argument is the file name that will be created, or output file
-//second argument is the data being written
-//third argument is the callback function handling errors, as well as a success message
-  //fs.writeFile('./index.html', pageHTML,err => {
-      //if(err) throw err;
-      //console.log('Portfolio complete! Check out index.html to see the output!');
-  //});
+//   first argument is the file name that will be created, or output file
+//   second argument is the data being written
+//   third argument is the callback function handling errors, as well as a success message
+//         fs.writeFile('./index.html', pageHTML,err => {
+//           if(err) throw err;
+//           console.log('Portfolio complete! Check out index.html to see the output!');
+//         });
 const promptUser = () => {
   return inquirer.prompt([
     {
@@ -69,8 +69,8 @@ const promptProject = portfolioData => {
   Add a New Project
   =================
   `);
-    //add projects array to porfolioData object and initialized it as an empty array
-    // If there's no 'projects' array property - create one, add projects array to porfolioData object and initialized it as an empty array
+    //   add projects array to porfolioData object and initialized it as an empty array
+    //    If there's no 'projects' array property - create one, add projects array to porfolioData object and initialized it as an empty array
   if (!portfolioData.projects) {
     portfolioData.projects = [];
   }
@@ -143,10 +143,24 @@ const promptProject = portfolioData => {
       }
     });
 };
-};
+
   
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    console.log(portfolioData);
-});
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  //checks if the css was copied correctly
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
